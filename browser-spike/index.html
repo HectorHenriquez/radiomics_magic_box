@@ -14,9 +14,10 @@ details{border:1px solid #dce5ec;border-radius:12px;background:#fff;overflow:hid
 [hidden]{display:none!important}@media(max-width:800px){main{padding:18px 14px 32px}.file-grid,.settings-grid{grid-template-columns:1fr}.preview-grid{gap:10px}.card{padding:16px}.result-controls{grid-template-columns:1fr 1fr}.result-controls label:last-child{grid-column:1/-1}}@media(max-width:520px){.preview-grid{grid-template-columns:1fr}}
 :root{color-scheme:dark;color:#f7fbff;background:#05090d}
 body{background:#05090d;color:#f7fbff}
-main{max-width:1200px}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#05090d;background-image:linear-gradient(rgba(0,0,0,.79),rgba(0,0,0,.79)),url('./assets/course-background.jpg');background-position:center,center;background-size:cover,contain;background-repeat:no-repeat,no-repeat}
+main{max-width:1200px;position:relative;z-index:1}
 .site-header{padding:14px 0 22px;margin-bottom:20px;border-bottom:1px solid rgba(120,207,250,.25)}
-.brand-logo{display:block;width:min(100%,470px);height:auto;margin:0 0 18px}
+.brand-logo{display:block;width:min(100%,235px);height:auto;margin:0 0 18px}
 .site-header h1{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:750;letter-spacing:-.035em}
 .intro{color:#c9d8e3;margin:8px 0 0}
 .card,details{background:rgba(67,165,216,.15);border:1px solid rgba(121,208,251,.32);box-shadow:0 10px 28px rgba(0,0,0,.16)}
@@ -44,8 +45,9 @@ button.secondary:hover:not(:disabled),.mode-tabs button:hover:not([aria-selected
 .preview-controls{padding:0 12px 11px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}.preview-controls button{padding:6px 9px;font-size:.78rem}.preview-controls button[aria-pressed=true]{background:#68c6f0;color:#06141d}.preview-controls label{display:flex;align-items:center;gap:7px;font-size:.8rem}.preview-controls input[type=range]{width:115px;accent-color:#70d5ff}.preview-controls output{min-width:2.3em}.preview-card figcaption{padding-bottom:7px}
 .case-list{list-style:none;padding:0;margin:13px 0 0;max-height:260px;overflow:auto}.case-list li{padding:9px 10px;border-top:1px solid rgba(121,208,251,.19)}.case-list button{padding:5px 9px;margin-right:8px}.case-list button[aria-pressed=true]{background:#79d3f5}.case-files{display:block;color:#bfd5e2;font-size:.79rem;margin:5px 0 0;word-break:break-word}.filter-panel summary{display:flex;align-items:center;justify-content:space-between;gap:12px}.filter-panel summary:after{content:'▾';float:none;font-size:1.5rem;line-height:.7;background:rgba(96,194,237,.2);border:1px solid rgba(131,216,255,.4);border-radius:7px;padding:5px 9px}.filter-panel[open] summary:after{content:'▴'}.filter-panel summary .summary-hint{font-weight:400;color:#c3d5e1;font-size:.76rem;margin-left:auto}
 .case-list li.error{color:#ffc3c5}
+.site-footer{margin-top:46px;padding:18px 2px 0;border-top:1px solid rgba(120,207,250,.28);color:#d7e4ed;font-size:.83rem;line-height:1.6}.site-footer p{margin:0}.site-footer a{color:#9cddff;text-underline-offset:3px}.site-footer a:hover{color:#d3f1ff}
 @media(max-width:800px){.file-grid{grid-template-columns:1fr}.drop-zone{min-height:0}}
-@media(max-width:520px){.site-header{padding-top:4px}.brand-logo{width:min(100%,360px)}}
+@media(max-width:520px){.site-header{padding-top:4px}.brand-logo{width:min(100%,235px)}.site-footer{margin-top:32px}}
 </style></head><body><main>
 <header class="site-header"><img class="brand-logo" src="./assets/learnradiomics-logo.png" width="2200" height="335" alt="LearnRadiomics"><h1>LearnRadiomics Magic Box</h1><p class="intro">Extracción local de casos NRRD y NIfTI 3D. Los archivos permanecen en tu equipo.</p></header>
 <nav class="mode-tabs" aria-label="Modo de extracción"><button id="single-mode" type="button" aria-selected="true">Caso único</button><button id="batch-mode" type="button" aria-selected="false">Casos múltiples</button></nav>
@@ -82,4 +84,5 @@ button.secondary:hover:not(:disabled),.mode-tabs button:hover:not([aria-selected
 <section id="result-section" class="card" aria-labelledby="result-title" hidden><div class="result-head"><h2 id="result-title">Resultados</h2><span id="result-count" class="muted"></span></div>
 <div class="result-controls"><label>Imagen derivada<select id="image-type-filter"><option value="all">Todas</option></select></label><label>Familia<select id="family-filter"><option value="all">Todas</option></select></label><label>Buscar característica<input id="feature-search" type="text" placeholder="Nombre de la característica"></label></div>
 <div class="table-scroll"><table><thead><tr><th>Característica</th><th>Valor</th></tr></thead><tbody id="result-body"></tbody></table></div><p class="inline-note" style="margin-top:10px">El CSV incluye todas las características calculadas, independientemente de los filtros de esta lista.</p></section>
+<footer class="site-footer"><p>Plataforma educativa basada en la metodología de PyRadiomics. El cálculo se realiza localmente en el navegador. Consulta la documentación oficial sobre <a href="https://pyradiomics.readthedocs.io/en/stable/radiomics.html" target="_blank" rel="noopener noreferrer">preprocesamiento y extracción</a> y <a href="https://pyradiomics.readthedocs.io/en/stable/features.html" target="_blank" rel="noopener noreferrer">definiciones de características</a>.</p></footer>
 </main><script type="module" src="./main.mjs?v=4"></script></body></html>

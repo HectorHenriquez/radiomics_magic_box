@@ -22,7 +22,7 @@ FILES = (
     "meshTables.mjs",
     "texture.mjs",
     "glcm.mjs",
-    "assets/magic-box-brand.png",
+    "assets/magic-box-brand-transparent.png",
     "assets/course-background.jpg",
     "PYRADIOMICS_LICENSE.txt",
     "ITK_LICENSE.txt",

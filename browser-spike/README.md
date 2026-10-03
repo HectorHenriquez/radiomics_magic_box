@@ -24,6 +24,7 @@ Controles disponibles: normalización (ninguna, z-score, mín–máx 0–1), rem
 - `node browser-spike/verify-filters.mjs`: compara los filtros con PyRadiomics sin remuestreo, a 2 mm y, para dos filtros, con z-score; incluye LoG con sigma de 1 y 2 mm.
 - `node browser-spike/verify-batch.mjs`: comprueba el emparejamiento de los cinco ejemplos, faltantes, duplicados y el formato CSV.
 - `node browser-spike/verify-nifti.mjs`: comprueba NIfTI `.nii` y `.nii.gz`, sform/qform, escala de intensidad, geometría mixta con NRRD y el visor.
+- `node browser-spike/verify-large-roi.mjs`: verifica GLCM con más de 160.000 vóxeles y compara los diámetros de forma con el cálculo exhaustivo. El remuestreo completo a 1 mm también se probó con una ROI sintética de 307.200 vóxeles.
 
 Los valores de referencia están en `../results/browser_reference*.csv` y `../results/parameter_sweep/features.csv`. Forma y GLCM con remuestreo a 2 mm también se compararon en cuatro combinaciones con normalización z-score o mín–máx. A 5 mm, dos casos dejan de cumplir las condiciones mínimas de ROI; la página muestra el error en vez de devolver características.
 

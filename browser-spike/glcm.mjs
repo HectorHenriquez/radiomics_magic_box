@@ -74,7 +74,10 @@ export function glcmFeatures(bins, selected, size) {
   for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)
     if(z>0||z===0&&y>0||z===0&&y===0&&x>0) directions.push([x,y,z]);
   const [sx,sy,sz]=size,plane=sx*sy;
-  const ng=Math.max(...bins.values());
+  // A large ROI can contain more entries than JavaScript accepts as call
+  // arguments. Scan the levels without spreading the map into Math.max.
+  let ng=0;
+  for(const level of bins.values())if(level>ng)ng=level;
   const sums={};let valid=0;
   for(const [dx,dy,dz] of directions) {
     const pairs=new Map();let total=0;

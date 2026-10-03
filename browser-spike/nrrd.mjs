@@ -1,6 +1,6 @@
-import {meshShape} from './meshShape.mjs';
+import {meshShape} from './meshShape.mjs?v=5';
 import {textureFeatures} from './texture.mjs';
-import {glcmFeatures} from './glcm.mjs';
+import {glcmFeatures} from './glcm.mjs?v=5';
 import {filteredImage, POINTWISE_FILTERS, waveletImages} from './filters.mjs';
 import {laplacianRecursiveGaussian} from './logFilter.mjs';
 

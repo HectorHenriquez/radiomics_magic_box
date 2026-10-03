@@ -1,4 +1,4 @@
-import {checkGeometry} from './nrrd.mjs?v=4';
+import {checkGeometry} from './nrrd.mjs?v=5';
 
 const OUTPUT_SIZE=320;
 

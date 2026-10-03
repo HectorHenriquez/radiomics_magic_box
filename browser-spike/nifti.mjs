@@ -68,7 +68,7 @@ export async function parseVolume(buffer,name=''){
     buffer=await new Response(stream).arrayBuffer();
   }
   if(new TextDecoder().decode(new Uint8Array(buffer,0,Math.min(4,buffer.byteLength)))==='NRRD'){
-    const {parseNrrd}=await import('./nrrd.mjs?v=4');return parseNrrd(buffer);
+    const {parseNrrd}=await import('./nrrd.mjs?v=5');return parseNrrd(buffer);
   }
   return parseNifti(buffer);
 }

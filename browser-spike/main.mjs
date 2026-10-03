@@ -30,7 +30,7 @@ const draw = (selector,bytes,width,height) => {
   $(selector==='#image-canvas'?'#image-placeholder':'#overlay-placeholder').hidden=true;
 };
 const runWorker = (payload,image,mask,onWorker) => new Promise((resolve,reject) => {
-  const worker=new Worker('./worker.mjs?v=4',{type:'module'});
+  const worker=new Worker('./worker.mjs?v=5',{type:'module'});
   if(onWorker)onWorker(worker,reject);
   worker.onmessage=event=>{worker.terminate();resolve(event.data);};
   worker.onerror=error=>{worker.terminate();reject(Error(error.message||'Error en el trabajador del navegador'));};

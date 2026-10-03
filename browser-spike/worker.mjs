@@ -1,6 +1,6 @@
-import {firstOrder, resampledFirstOrder, shapeTexture, filteredFeatureSets} from './nrrd.mjs?v=4';
-import {parseVolume} from './nifti.mjs?v=4';
-import {createPreview} from './preview.mjs?v=4';
+import {firstOrder, resampledFirstOrder, shapeTexture, filteredFeatureSets} from './nrrd.mjs?v=5';
+import {parseVolume} from './nifti.mjs?v=5';
+import {createPreview} from './preview.mjs?v=5';
 self.onmessage = async ({data}) => {
   try {
     const image = await parseVolume(data.image,data.imageName);

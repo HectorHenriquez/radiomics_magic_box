@@ -27,6 +27,7 @@ Con los cinco casos de ejemplo disponibles localmente:
 ```sh
 node browser-spike/verify-batch.mjs
 node browser-spike/verify-nifti.mjs
+node browser-spike/verify-large-roi.mjs
 node browser-spike/verify-sweep.mjs
 node browser-spike/verify-filters.mjs
 ```

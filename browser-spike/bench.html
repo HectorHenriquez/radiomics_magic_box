@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Benchmark radiomics</title></head><body><pre id="output">Ejecutando…</pre><script type="module">
+const ids=['AMC-007','AMC-032','AMC-041'];
+const rows=[];
+const median=xs=>xs.slice().sort((a,b)=>a-b)[Math.floor(xs.length/2)];
+const worker=new Worker('./bench-worker.mjs',{type:'module'});
+try{
+  for(const id of ids){
+    const start=performance.now();
+    const [imageResponse,maskResponse]=await Promise.all([
+      fetch(`../data_radiomics/images/${id}_chest_ct_image.nrrd`,{cache:'no-store'}),
+      fetch(`../data_radiomics/masks/${id}_chest_ct_segmentation.nrrd`,{cache:'no-store'})
+    ]);
+    if(!imageResponse.ok||!maskResponse.ok)throw Error(`HTTP ${imageResponse.status}/${maskResponse.status}`);
+    const [image,mask]=await Promise.all([imageResponse.arrayBuffer(),maskResponse.arrayBuffer()]);
+    const fetch_ms=performance.now()-start;
+    const result=await new Promise((resolve,reject)=>{
+      worker.onmessage=event=>resolve(event.data);
+      worker.onerror=error=>reject(error);
+      worker.postMessage({case:id,image,mask},[image,mask]);
+    });
+    if(result.error)throw Error(`${id}: ${result.error}`);
+    rows.push({...result,fetch_ms});
+  }
+  const result={engine:'Browser JavaScript Web Worker',userAgent:navigator.userAgent,rows,
+    overall_extract_median_ms:median(rows.map(r=>r.extract_median_ms))};
+  document.querySelector('#output').textContent=JSON.stringify(result,null,2);
+}catch(error){document.querySelector('#output').textContent='ERROR: '+error.stack;}
+finally{worker.terminate();}
+</script></body></html>

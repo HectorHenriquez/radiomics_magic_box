@@ -1,0 +1,7 @@
+Case ID,normalization,resample,binWidth,original_firstorder_Entropy
+AMC-007,none,False,75,2.263156384106691
+AMC-032,none,False,75,3.433483523005628
+AMC-007,none,True,75,2.1529152827062483
+AMC-032,none,True,75,3.015992319542319
+AMC-007,zscore,True,75,0.9938774184886416
+AMC-007,minmax,True,0.05,0.9098988082187239

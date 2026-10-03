@@ -1,0 +1,7 @@
+Case ID,interpolator,original_firstorder_Mean,original_firstorder_Median,original_firstorder_Minimum,original_firstorder_Maximum,original_firstorder_Variance
+AMC-007,sitkNearestNeighbor,-507.0825396825397,-524.0,-689.0,-137.0,8504.659853867473
+AMC-007,sitkLinear,-510.9428571428571,-524.0,-675.0,-181.0,7381.609433106574
+AMC-032,sitkNearestNeighbor,-21.087912087912088,6.0,-835.0,475.0,36431.13512860766
+AMC-032,sitkLinear,-58.391941391941394,-17.0,-568.0,234.0,27990.08447718338
+AMC-035,sitkNearestNeighbor,18.430839002267575,12.0,-195.0,688.0,15390.131838071587
+AMC-035,sitkLinear,5.866213151927438,13.0,-357.0,670.0,16271.771216725541

@@ -1,0 +1,10 @@
+{
+  "engine": "Browser JavaScript Web Worker",
+  "browser": "Chrome 152",
+  "case_rows": [
+    {"case": "AMC-007", "fetch_ms": 250.3, "parse_ms": 74.3, "extract_median_ms": 468.6, "extract_times_ms": [439.6, 446.7, 473.6, 526.9, 468.6]},
+    {"case": "AMC-032", "fetch_ms": 282.8, "parse_ms": 64.1, "extract_median_ms": 470.1, "extract_times_ms": [463.3, 455.9, 568.9, 559.9, 470.1]},
+    {"case": "AMC-041", "fetch_ms": 361.9, "parse_ms": 65.6, "extract_median_ms": 581.6, "extract_times_ms": [581.6, 699.7, 475.7, 520.7, 592.1]}
+  ],
+  "note": "Valores obtenidos de la página browser-spike/bench.html en el Web Worker de Chrome; lectura mediante fetch local con cache no-store."
+}

@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-10-02T20:40:30.695836+00:00",
+  "engine": "PyRadiomics",
+  "engine_version": "v3.0.1",
+  "SimpleITK_version": "2.5.5",
+  "cases": [
+    "AMC-007",
+    "AMC-032",
+    "AMC-035",
+    "AMC-041",
+    "R01-091"
+  ],
+  "voxel_sizes_mm": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "bin_widths": [
+    25,
+    50,
+    75,
+    100
+  ],
+  "fixed_parameters": {
+    "imageType": {
+      "Original": {}
+    },
+    "normalize": false,
+    "interpolator": "sitkLinear",
+    "mask_interpolator": "sitkNearestNeighbor",
+    "label": 1,
+    "featureClass": {
+      "shape": [],
+      "firstorder": [],
+      "glcm": [],
+      "glrlm": [],
+      "glszm": [],
+      "gldm": [],
+      "ngtdm": []
+    }
+  },
+  "runs": 80,
+  "successful_runs": 72,
+  "feature_count": 107
+}

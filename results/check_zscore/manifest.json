@@ -1,0 +1,38 @@
+{
+  "engine": "PyRadiomics",
+  "version": "v3.0.1",
+  "SimpleITK": "2.5.5",
+  "normalization": "zscore",
+  "normalization_scope": "PyRadiomics native",
+  "parameters": {
+    "imageType": {
+      "Original": {}
+    },
+    "setting": {
+      "normalize": true,
+      "binWidth": 75.0,
+      "resampledPixelSpacing": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "interpolator": "sitkBSpline",
+      "label": 1
+    },
+    "featureClass": {
+      "shape": [],
+      "firstorder": [],
+      "glcm": [],
+      "glrlm": [],
+      "glszm": [],
+      "gldm": [],
+      "ngtdm": []
+    }
+  },
+  "cases_requested": [
+    "AMC-007"
+  ],
+  "cases_succeeded": [
+    "AMC-007"
+  ]
+}

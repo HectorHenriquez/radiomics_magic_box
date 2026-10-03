@@ -1,0 +1,58 @@
+[
+  {
+    "Case ID": "AMC-032",
+    "voxel_mm": 5,
+    "binWidth": 25,
+    "status": "error",
+    "error": "mask only contains 1 segmented voxel! Cannot extract features for a single voxel."
+  },
+  {
+    "Case ID": "AMC-032",
+    "voxel_mm": 5,
+    "binWidth": 50,
+    "status": "error",
+    "error": "mask only contains 1 segmented voxel! Cannot extract features for a single voxel."
+  },
+  {
+    "Case ID": "AMC-032",
+    "voxel_mm": 5,
+    "binWidth": 75,
+    "status": "error",
+    "error": "mask only contains 1 segmented voxel! Cannot extract features for a single voxel."
+  },
+  {
+    "Case ID": "AMC-032",
+    "voxel_mm": 5,
+    "binWidth": 100,
+    "status": "error",
+    "error": "mask only contains 1 segmented voxel! Cannot extract features for a single voxel."
+  },
+  {
+    "Case ID": "AMC-035",
+    "voxel_mm": 5,
+    "binWidth": 25,
+    "status": "error",
+    "error": "mask has too few dimensions (number of dimensions 1, minimum required 2)"
+  },
+  {
+    "Case ID": "AMC-035",
+    "voxel_mm": 5,
+    "binWidth": 50,
+    "status": "error",
+    "error": "mask has too few dimensions (number of dimensions 1, minimum required 2)"
+  },
+  {
+    "Case ID": "AMC-035",
+    "voxel_mm": 5,
+    "binWidth": 75,
+    "status": "error",
+    "error": "mask has too few dimensions (number of dimensions 1, minimum required 2)"
+  },
+  {
+    "Case ID": "AMC-035",
+    "voxel_mm": 5,
+    "binWidth": 100,
+    "status": "error",
+    "error": "mask has too few dimensions (number of dimensions 1, minimum required 2)"
+  }
+]

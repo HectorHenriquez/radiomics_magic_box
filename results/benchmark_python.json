@@ -1,0 +1,65 @@
+{
+  "engine": "PyRadiomics",
+  "version": "v3.0.1",
+  "settings": {
+    "imageType": {
+      "Original": {}
+    },
+    "setting": {
+      "normalize": false,
+      "binWidth": 75,
+      "label": 1,
+      "additionalInfo": false
+    },
+    "featureClass": {
+      "shape": [],
+      "firstorder": [
+        "Mean",
+        "Median",
+        "Minimum",
+        "Maximum",
+        "Variance",
+        "Entropy"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "case": "AMC-007",
+      "load_ms": 62.60566599667072,
+      "extract_median_ms": 2275.840124930255,
+      "extract_times_ms": [
+        2249.6072499779984,
+        2259.6495419275016,
+        2278.2787500182167,
+        2275.840124930255,
+        2303.3307919977233
+      ]
+    },
+    {
+      "case": "AMC-032",
+      "load_ms": 49.90241699852049,
+      "extract_median_ms": 1984.9384169792756,
+      "extract_times_ms": [
+        2001.3654999202117,
+        1979.394750087522,
+        1982.2074580006301,
+        1989.249833044596,
+        1984.9384169792756
+      ]
+    },
+    {
+      "case": "AMC-041",
+      "load_ms": 58.09025000780821,
+      "extract_median_ms": 2870.5362499458715,
+      "extract_times_ms": [
+        2879.802917013876,
+        2881.6603330196813,
+        2870.5362499458715,
+        2853.6539159249514,
+        2832.4593340512365
+      ]
+    }
+  ],
+  "overall_extract_median_ms": 2275.840124930255
+}

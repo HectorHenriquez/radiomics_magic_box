@@ -1,0 +1,6 @@
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+data_radiomics/
+radiomics_course_notebooks-main/

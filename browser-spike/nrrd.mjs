@@ -27,7 +27,8 @@ export function parseNrrd(buffer) {
     if (index > 0 && !line.startsWith('#')) fields[line.slice(0, index).trim().toLowerCase()] = line.slice(index + 1).trim();
   }
   if (fields.encoding !== 'raw') throw Error('Esta prueba admite NRRD raw sin compresión');
-  if (fields.endian !== 'little') throw Error('Esta prueba admite little endian');
+  if (fields.endian !== 'little' && !(TYPES[fields.type?.toLowerCase()]?.BYTES_PER_ELEMENT===1 && !fields.endian))
+    throw Error('Esta prueba admite little endian');
   if (Number(fields.dimension) !== 3) throw Error('Se requiere un volumen 3D');
   const Type = TYPES[fields.type?.toLowerCase()];
   if (!Type) throw Error(`Tipo NRRD no admitido: ${fields.type}`);
@@ -40,7 +41,13 @@ export function parseNrrd(buffer) {
   if (!littleEndianHost) throw Error('Este navegador requiere conversión de endian no implementada');
   const aligned = offset % Type.BYTES_PER_ELEMENT === 0;
   const values = aligned ? new Type(buffer, offset, count) : new Type(buffer.slice(offset));
-  return {values, sizes, fields};
+  if(fields.space==='right-anterior-superior'){
+    const convert=value=>`(${value.split(',').map((part,axis)=>Number(part)*(axis<2?-1:1)).join(',')})`;
+    fields['space directions']=(fields['space directions']||'').replace(/\(([^)]+)\)/g,(_,value)=>convert(value));
+    fields['space origin']=(fields['space origin']||'').replace(/\(([^)]+)\)/g,(_,value)=>convert(value));
+    fields.space='left-posterior-superior';
+  }
+  return {values, sizes, fields,format:'NRRD'};
 }
 
 function triples(text) {

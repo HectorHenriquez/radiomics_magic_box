@@ -1,6 +1,6 @@
 # Radiomics Magic Box
 
-Prototipo educativo de extracción radiomics que se ejecuta localmente en el navegador. Admite un caso individual y un lote de imágenes NRRD con sus segmentaciones; exporta las características a CSV.
+Prototipo educativo de extracción radiomics que se ejecuta localmente en el navegador. Admite un caso individual y casos múltiples con imágenes y segmentaciones NRRD o NIfTI; exporta las características a CSV.
 
 ## Ejecutar
 
@@ -26,6 +26,7 @@ Con los cinco casos de ejemplo disponibles localmente:
 
 ```sh
 node browser-spike/verify-batch.mjs
+node browser-spike/verify-nifti.mjs
 node browser-spike/verify-sweep.mjs
 node browser-spike/verify-filters.mjs
 ```

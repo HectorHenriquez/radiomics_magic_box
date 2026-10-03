@@ -14,6 +14,8 @@ assert.equal(plan.missingMasks.length,0);
 assert.equal(plan.missingImages.length,0);
 const namedSegmentations=pairFiles(files.map(file=>({...file,webkitRelativePath:file.webkitRelativePath.replace('/masks/','/segmentations/')})));
 assert.equal(namedSegmentations.pairs.length,5);
+const mixed=pairFiles(files.map(file=>({...file,name:file.name.replace('.nrrd',file.webkitRelativePath.includes('/images/')?'.nii.gz':'.nii')})));
+assert.equal(mixed.pairs.length,5);
 const absent=pairFiles(files.filter(file=>!file.name.includes('AMC-007_chest_ct_segmentation')));
 assert.deepEqual(absent.missingMasks,['AMC-007']);
 const duplicate=pairFiles([...files,files.find(file=>file.name==='AMC-007_chest_ct_image.nrrd')]);

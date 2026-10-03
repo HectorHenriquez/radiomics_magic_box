@@ -1,4 +1,5 @@
-const stem = name => name.replace(/\.nrrd$/i,'');
+export const isVolumeFile = name => /\.(?:nrrd|nii|nii\.gz)$/i.test(name);
+const stem = name => name.replace(/\.(?:nrrd|nii|nii\.gz)$/i,'');
 const caseId = (name,kind) => stem(name).replace(kind==='image'?/(?:_chest_ct)?_image$/i:/(?:_chest_ct)?_(?:segmentation|mask)$/i,'');
 
 export function pairFiles(files) {
@@ -8,7 +9,7 @@ export function pairFiles(files) {
     const segments=path.split('/');
     const folder=segments.at(-2)?.toLowerCase();
     const kind=folder==='images'?'image':['segmentations','masks'].includes(folder)?'mask':null;
-    if(!kind||!file.name.toLowerCase().endsWith('.nrrd')){ignored.push(path);continue;}
+    if(!kind||!isVolumeFile(file.name)){ignored.push(path);continue;}
     const id=caseId(file.name,kind),map=kind==='image'?images:masks;
     if(map.has(id))duplicates.push(`${id}: ${kind==='image'?'imagen':'máscara'} duplicada`);
     else map.set(id,file);

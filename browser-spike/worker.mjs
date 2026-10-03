@@ -1,12 +1,13 @@
-import {parseNrrd, firstOrder, resampledFirstOrder, shapeTexture, filteredFeatureSets} from './nrrd.mjs';
-import {createPreview} from './preview.mjs';
-self.onmessage = ({data}) => {
+import {firstOrder, resampledFirstOrder, shapeTexture, filteredFeatureSets} from './nrrd.mjs?v=4';
+import {parseVolume} from './nifti.mjs?v=4';
+import {createPreview} from './preview.mjs?v=4';
+self.onmessage = async ({data}) => {
   try {
-    const image = parseNrrd(data.image);
-    const mask = parseNrrd(data.mask);
+    const image = await parseVolume(data.image,data.imageName);
+    const mask = await parseVolume(data.mask,data.maskName);
     if(data.action==='preview') {
       const preview=createPreview(image,mask);
-      if(preview.imageRgba)self.postMessage({action:'preview',...preview},[preview.imageRgba.buffer,preview.overlayRgba.buffer]);
+      if(preview.intensities)self.postMessage({action:'preview',...preview},[preview.intensities.buffer,preview.overlayFlags.buffer]);
       else self.postMessage({action:'preview',...preview});
       return;
     }

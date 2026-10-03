@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Radiomics · extracción local</title>
+<title>LearnRadiomics Magic Box</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#203247;background:#f3f6f8}*{box-sizing:border-box}body{margin:0}main{max-width:1160px;margin:auto;padding:26px 22px 48px}h1{margin:0;font-size:1.8rem;letter-spacing:-.03em}h2{font-size:1.05rem;margin:0 0 14px}.intro{color:#526375;margin:8px 0 22px;line-height:1.45}
 .card{background:#fff;border:1px solid #dce5ec;border-radius:14px;padding:20px;box-shadow:0 2px 12px #253c5610}.file-grid,.preview-grid,.settings-grid{display:grid;gap:16px}.file-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}
@@ -12,8 +12,37 @@ details{border:1px solid #dce5ec;border-radius:12px;background:#fff;overflow:hid
 .mode-tabs{display:flex;gap:8px;margin:0 0 16px}.mode-tabs button{background:#e7f0f6;color:#175681}.mode-tabs button[aria-selected=true]{background:#17679c;color:white}.batch-list{max-height:270px;overflow:auto;margin:12px 0 0;padding-left:22px;color:#43596d;font-size:.86rem}.batch-list li{margin:4px 0}.batch-list .error{color:#922e2e}
 .result-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.result-controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:10px;margin:14px 0}.result-controls label{font-size:.8rem}.table-scroll{max-height:430px;overflow:auto;border:1px solid #dce5ec;border-radius:9px}table{border-collapse:collapse;width:100%;font-size:.86rem}th,td{padding:9px 12px;border-bottom:1px solid #e8edf1;text-align:left}th{position:sticky;top:0;background:#eef3f7;z-index:1}td:last-child{text-align:right;font-variant-numeric:tabular-nums;word-break:break-all}tbody tr:nth-child(even){background:#fafcfd}
 [hidden]{display:none!important}@media(max-width:800px){main{padding:18px 14px 32px}.file-grid,.settings-grid{grid-template-columns:1fr}.preview-grid{gap:10px}.card{padding:16px}.result-controls{grid-template-columns:1fr 1fr}.result-controls label:last-child{grid-column:1/-1}}@media(max-width:520px){.preview-grid{grid-template-columns:1fr}}
+:root{color-scheme:dark;color:#f7fbff;background:#05090d}
+body{background:#05090d;color:#f7fbff}
+main{max-width:1200px}
+.site-header{padding:14px 0 22px;margin-bottom:20px;border-bottom:1px solid rgba(120,207,250,.25)}
+.brand-logo{display:block;width:min(100%,470px);height:auto;margin:0 0 18px}
+.site-header h1{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:750;letter-spacing:-.035em}
+.intro{color:#c9d8e3;margin:8px 0 0}
+.card,details{background:rgba(67,165,216,.15);border:1px solid rgba(121,208,251,.32);box-shadow:0 10px 28px rgba(0,0,0,.16)}
+details{background:rgba(67,165,216,.13)}
+details[open] summary,th{border-color:rgba(121,208,251,.2)}
+summary:after{color:#b3e6ff}
+input[type=file],input[type=text],input[type=number],select{background:rgba(3,16,26,.75);border:1px solid rgba(151,213,245,.48);color:#fff}
+input::placeholder{color:#a9c0cf;opacity:1}input[type=checkbox]{accent-color:#66ccfa}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #9ce2ff;outline-offset:2px}
+select option{background:#102431;color:#fff}
+small,.muted,.inline-note,.preview-note{color:#c3d5e1}
+.geometry{background:rgba(129,209,251,.13);color:#e8f7ff;border:1px solid rgba(129,209,251,.22)}
+.geometry.ok{background:rgba(50,179,127,.18);border-color:rgba(93,219,160,.35);color:#c9ffe3}
+.geometry.warning{background:rgba(230,169,65,.18);border-color:rgba(240,189,99,.38);color:#ffe7b6}
+.geometry.error{background:rgba(231,82,88,.18);border-color:rgba(246,116,121,.38);color:#ffd4d5}
+.preview-card,.table-scroll{border-color:rgba(121,208,251,.28)}
+.preview-card{background:#07111a}.preview-card figcaption{color:#f1faff}.placeholder{color:#bbd1df}
+button,.mode-tabs button[aria-selected=true]{background:#55bce9;color:#05141e}
+button:hover:not(:disabled),.mode-tabs button[aria-selected=true]:hover{background:#80d4f7}
+button.secondary,.mode-tabs button{background:rgba(98,193,239,.18);color:#e7f8ff;border:1px solid rgba(132,218,255,.34)}
+button.secondary:hover:not(:disabled),.mode-tabs button:hover:not([aria-selected=true]){background:rgba(98,193,239,.3)}
+#status,#batch-status,.batch-list{color:#d6e8f3}.batch-list .error{color:#ffc3c5}
+.table-scroll{background:rgba(3,15,24,.38)}th{background:#163749;color:#f5fbff}th,td{border-bottom-color:rgba(121,208,251,.2)}tbody tr:nth-child(even){background:rgba(86,187,237,.08)}
+@media(max-width:520px){.site-header{padding-top:4px}.brand-logo{width:min(100%,360px)}}
 </style></head><body><main>
-<header><h1>Radiomics en el navegador</h1><p class="intro">Extracción local de casos NRRD 3D. Los archivos permanecen en tu equipo.</p></header>
+<header class="site-header"><img class="brand-logo" src="./assets/learnradiomics-logo.png" width="2200" height="335" alt="LearnRadiomics"><h1>LearnRadiomics Magic Box</h1><p class="intro">Extracción local de casos NRRD 3D. Los archivos permanecen en tu equipo.</p></header>
 <nav class="mode-tabs" aria-label="Modo de extracción"><button id="single-mode" type="button" aria-selected="true">Caso único</button><button id="batch-mode" type="button" aria-selected="false">Lote</button></nav>
 <section id="single-files" class="card" aria-labelledby="files-title"><h2 id="files-title">Seleccionar caso</h2><div class="file-grid">
 <label>Imagen NRRD<input id="image" type="file" accept=".nrrd"></label>

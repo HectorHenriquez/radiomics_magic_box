@@ -57,7 +57,7 @@ function matrixFeatures(entries, count, family, nVoxels) {
   };
 }
 
-export function textureFeatures(bins, selected, size) {
+export function textureFeatures(bins, selected, size, onProgress = () => {}) {
   const [sx,sy,sz]=size, plane=sx*sy;
   const coord = idx => [idx%sx, Math.floor(idx/sx)%sy, Math.floor(idx/plane)];
   const at = (x,y,z) => x>=0&&y>=0&&z>=0&&x<sx&&y<sy&&z<sz ? x+sx*(y+sy*z) : -1;
@@ -80,6 +80,7 @@ export function textureFeatures(bins, selected, size) {
     for (const [key,value] of Object.entries(values)) {runSums[key]=(runSums[key]||0)+value;runCounts[key]=(runCounts[key]||0)+1;}
   }
   for (const key in runSums) result[`original_glrlm_${key}`]=runSums[key]/runCounts[key];
+  onProgress(0.25,'GLRLM');
 
   // 26-connected components of equal discretized level are size zones.
   const seen=new Set(), zoneMatrix=new Map();let zones=0;
@@ -98,6 +99,7 @@ export function textureFeatures(bins, selected, size) {
   }
   const zoneValues=matrixFeatures([...zoneMatrix].map(([key,n])=>[...key.split(',').map(Number),n]),zones,'glszm',selected.length);
   for (const [key,value] of Object.entries(zoneValues)) result[`original_glszm_${key}`]=value;
+  onProgress(0.5,'GLSZM');
 
   // GLDM includes the center voxel, so the dependence size is at least one.
   const depMatrix=new Map();
@@ -114,6 +116,7 @@ export function textureFeatures(bins, selected, size) {
   }
   const depValues=matrixFeatures([...depMatrix].map(([key,n])=>[...key.split(',').map(Number),n]),selected.length,'gldm',selected.length);
   for (const [key,value] of Object.entries(depValues)) result[`original_gldm_${key}`]=value;
+  onProgress(0.75,'GLDM');
   const levels=[...ngtdm].map(([i,{n,s}])=>({i,p:n/selected.length,s}));
   let weighted=0,sumS=0,pairContrast=0,busyDenom=0,complexity=0,strengthNum=0;
   for (const a of levels) {weighted+=a.p*a.s;sumS+=a.s;
@@ -132,5 +135,6 @@ export function textureFeatures(bins, selected, size) {
     original_ngtdm_Complexity:complexity/selected.length,
     original_ngtdm_Strength:sumS?strengthNum/sumS:0,
   });
+  onProgress(1,'NGTDM');
   return result;
 }

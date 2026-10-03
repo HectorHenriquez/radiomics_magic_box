@@ -1,6 +1,6 @@
 import {meshShape} from './meshShape.mjs?v=5';
-import {textureFeatures} from './texture.mjs';
-import {glcmFeatures} from './glcm.mjs?v=5';
+import {textureFeatures} from './texture.mjs?v=6';
+import {glcmFeatures} from './glcm.mjs?v=6';
 import {filteredImage, POINTWISE_FILTERS, waveletImages} from './filters.mjs';
 import {laplacianRecursiveGaussian} from './logFilter.mjs';
 
@@ -194,8 +194,10 @@ function normalizedImageView(image, mode) {
   return {...image,values};
 }
 
-export function filteredFeatureSets(image, mask, binWidth, filters, normalization = 'none', logSigmas = [1]) {
+export function filteredFeatureSets(image, mask, binWidth, filters, normalization = 'none', logSigmas = [1], onProgress = () => {}) {
   const result={};
+  const total=filters.reduce((count,type)=>count+(type==='wavelet'?8:type==='log'?logSigmas.length:1),0);
+  let completed=0;
   image=normalizedImageView(image,normalization);
   const [sx,sy,sz]=image.sizes,plane=sx*sy;
   const low=[sx,sy,sz],high=[-1,-1,-1];
@@ -232,6 +234,7 @@ export function filteredFeatureSets(image, mask, binWidth, filters, normalizatio
         const label=`log-sigma-${Number.isInteger(sigma)?sigma.toFixed(1):sigma}-mm-3D`.replace(/\./g,'-');
         for(const [key,value] of Object.entries(features))
           if(key.startsWith('original_'))result[`${label}_${key.slice('original_'.length)}`]=value;
+        onProgress(++completed/total,`Filtro LoG σ ${sigma} mm`);
       }
       continue;
     }
@@ -242,12 +245,13 @@ export function filteredFeatureSets(image, mask, binWidth, filters, normalizatio
         ...shapeTexture(smallImage,smallMask,'none',binWidth,true,false)};
       for(const [key,value] of Object.entries(features))
         if(key.startsWith('original_'))result[`${name}_${key.slice('original_'.length)}`]=value;
+      onProgress(++completed/total,`Filtro ${name}`);
     }
   }
   return result;
 }
 
-export function resampledFirstOrder(image, mask, targetSpacing, interpolation = 'linear', normalization = 'none', binWidth = 75, includeShapeTexture = false, includeGlcm = true, filters = [], logSigmas = [1]) {
+export function resampledFirstOrder(image, mask, targetSpacing, interpolation = 'linear', normalization = 'none', binWidth = 75, includeShapeTexture = false, includeGlcm = true, filters = [], logSigmas = [1], onProgress = () => {}) {
   if (!['linear', 'nearest'].includes(interpolation)) throw Error('Interpolación no admitida');
   assertGeometry(image,mask);
   if (targetSpacing.length !== 3 || targetSpacing.some(value => !(value > 0))) throw Error('Tamaño de vóxel inválido');
@@ -255,8 +259,8 @@ export function resampledFirstOrder(image, mask, targetSpacing, interpolation = 
   const ratio = oldSpacing.map((value, axis) => value / targetSpacing[axis]);
   if (ratio.every(value => Math.abs(value - 1) < 1e-8)) return {
     ...firstOrder(image, mask, 1, normalization, binWidth),
-    ...(includeShapeTexture ? shapeTexture(image, mask, normalization, binWidth, includeGlcm) : {}),
-    ...(filters.length ? filteredFeatureSets(normalizedImageView(image,normalization),mask,binWidth,filters,'none',logSigmas) : {}),
+    ...(includeShapeTexture ? shapeTexture(image, mask, normalization, binWidth, includeGlcm,true,(fraction,label)=>onProgress(.05+.7*fraction,label)) : {}),
+    ...(filters.length ? filteredFeatureSets(normalizedImageView(image,normalization),mask,binWidth,filters,'none',logSigmas,(fraction,label)=>onProgress(.75+.25*fraction,label)) : {}),
   };
   if (!['none', 'zscore', 'minmax'].includes(normalization)) throw Error('Normalización no admitida');
   let fullSum = 0, fullSquares = 0, fullMin = Infinity, fullMax = -Infinity;
@@ -329,6 +333,8 @@ export function resampledFirstOrder(image, mask, targetSpacing, interpolation = 
         }
       }
     }
+    if ((nz-gridLow[2])%Math.max(1,Math.floor(gridSize[2]/30))===0 || nz===gridHigh[2])
+      onProgress(.35*(nz-gridLow[2]+1)/gridSize[2],'Remuestreo');
   }
   if (!roi.length) throw Error('La máscara quedó vacía tras el remuestreo');
   if (roi.length === 1) throw Error('La máscara tiene un solo vóxel tras el remuestreo');
@@ -345,11 +351,11 @@ export function resampledFirstOrder(image, mask, targetSpacing, interpolation = 
   const resampledImage={values:gridImage,sizes:gridSize,fields};
   const resampledMask={values:gridMask,sizes:gridSize,fields};
   return {...first,
-    ...(includeShapeTexture ? shapeTexture(resampledImage,resampledMask,'none',binWidth,includeGlcm) : {}),
-    ...(filters.length ? filteredFeatureSets(resampledImage,resampledMask,binWidth,filters,'none',logSigmas) : {})};
+    ...(includeShapeTexture ? shapeTexture(resampledImage,resampledMask,'none',binWidth,includeGlcm,true,(fraction,label)=>onProgress(.35+.4*fraction,label)) : {}),
+    ...(filters.length ? filteredFeatureSets(resampledImage,resampledMask,binWidth,filters,'none',logSigmas,(fraction,label)=>onProgress(.75+.25*fraction,label)) : {})};
 }
 
-export function shapeTexture(image, mask, normalization = 'none', binWidth = 75, includeGlcm = true, includeShape = true) {
+export function shapeTexture(image, mask, normalization = 'none', binWidth = 75, includeGlcm = true, includeShape = true, onProgress = () => {}) {
   assertGeometry(image,mask);
   if (!(binWidth > 0)) throw Error('binWidth debe ser positivo');
   const spacing = spacingOf(image);
@@ -401,7 +407,8 @@ export function shapeTexture(image, mask, normalization = 'none', binWidth = 75,
     }
   }
   const eigen = [covariance[0][0],covariance[1][1],covariance[2][2]].map(value => Math.max(0,value)).sort((a,b) => a-b);
-  return {
+  onProgress(.12,'Discretización');
+  const result={
     ...(includeShape ? {
       ...meshShape(mask, selected.map(([index]) => index), spacing),
       original_shape_VoxelVolume: selected.length * spacing[0] * spacing[1] * spacing[2],
@@ -411,7 +418,11 @@ export function shapeTexture(image, mask, normalization = 'none', binWidth = 75,
       original_shape_Elongation: Math.sqrt(eigen[1] / eigen[2]),
       original_shape_Flatness: Math.sqrt(eigen[0] / eigen[2]),
     } : {}),
-    ...(includeGlcm ? textureFeatures(bins, selected, size) : {}),
-    ...(includeGlcm ? glcmFeatures(bins, selected, size) : {}),
   };
+  onProgress(.28,'Forma');
+  if(includeGlcm){
+    Object.assign(result,textureFeatures(bins,selected,size,(fraction,label)=>onProgress(.28+.4*fraction,label)));
+    Object.assign(result,glcmFeatures(bins,selected,size,fraction=>onProgress(.68+.32*fraction,'GLCM')));
+  }
+  return result;
 }

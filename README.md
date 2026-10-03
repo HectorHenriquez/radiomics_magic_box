@@ -12,6 +12,23 @@ python3 -m http.server 8000
 
 Abrir `http://localhost:8000/browser-spike/`. Consultar [la guía de uso](browser-spike/README.md) para formatos, parámetros y limitaciones.
 
+## Publicar en Cloudflare Pages
+
+La aplicación pública se genera con `python3 scripts/build_pages.py`. El resultado queda en `dist/` e incluye solo la interfaz, sus módulos, imágenes de marca y licencias. No publica los datos de ejemplo, pruebas ni páginas de benchmark.
+
+En Cloudflare Pages, conectar este repositorio de GitHub y configurar:
+
+| Campo | Valor |
+| --- | --- |
+| Rama de producción | `main` |
+| Directorio raíz | raíz del repositorio |
+| Comando de build | `python3 scripts/build_pages.py` |
+| Directorio de salida | `dist` |
+
+Tras el primer despliegue, añadir `magicbox.learnradiomics.com` en **Custom domains** del proyecto Pages. Si el DNS de `learnradiomics.com` permanece en Hostinger, añadir allí un registro CNAME `magicbox` que apunte al dominio `<proyecto>.pages.dev` asignado por Cloudflare. No es necesario cambiar el alojamiento de WordPress. En WordPress, añadir un enlace o botón a `https://magicbox.learnradiomics.com/`.
+
+Los archivos clínicos se leen y procesan en el navegador; el despliegue sirve únicamente el código estático. El acceso público inicial no requiere base de datos ni autenticación.
+
 ## Datos de ejemplo
 
 Los volúmenes en `data_radiomics/` no se incluyen en el repositorio. Las pruebas de comparación que usan esos casos requieren colocarlos localmente en `data_radiomics/images/` y `data_radiomics/masks/` con los nombres descritos en los scripts de verificación. Los notebooks originales del curso y el entorno virtual local tampoco se incluyen.

@@ -3,4 +3,5 @@
 __pycache__/
 *.py[cod]
 data_radiomics/
+dist/
 radiomics_course_notebooks-main/

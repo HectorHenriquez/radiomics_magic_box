@@ -29,13 +29,22 @@ const draw = (selector,bytes,width,height) => {
   canvas.style.display='block';
   $(selector==='#image-canvas'?'#image-placeholder':'#overlay-placeholder').hidden=true;
 };
-const runWorker = (payload,image,mask,onWorker) => new Promise((resolve,reject) => {
-  const worker=new Worker('./worker.mjs?v=5',{type:'module'});
+const runWorker = (payload,image,mask,onWorker,onProgress) => new Promise((resolve,reject) => {
+  const worker=new Worker('./worker.mjs?v=6',{type:'module'});
   if(onWorker)onWorker(worker,reject);
-  worker.onmessage=event=>{worker.terminate();resolve(event.data);};
+  worker.onmessage=event=>{
+    if(event.data.type==='progress'){onProgress?.(event.data);return;}
+    worker.terminate();resolve(event.data);
+  };
   worker.onerror=error=>{worker.terminate();reject(Error(error.message||'Error en el trabajador del navegador'));};
   worker.postMessage({...payload,image,mask},[image,mask]);
 });
+const elapsed=start=>`${Math.floor((performance.now()-start)/1000)} s transcurridos`;
+function progressPanel(kind){
+  const panel=$(`#${kind}-progress`),bar=$(`#${kind}-progress-bar`),label=$(`#${kind}-progress-label`),count=$(`#${kind}-progress-count`),time=$(`#${kind}-progress-time`);
+  return {show(){panel.hidden=false;bar.value=0;},hide(){panel.hidden=true;},update(percent,phase,detail,clock){bar.value=Math.max(0,Math.min(100,Math.round(percent)));label.textContent=phase;count.textContent=detail;time.textContent=clock;}};
+}
+const singleProgress=progressPanel('single'),batchProgress=progressPanel('batch');
 
 function renderPreview(){
   const opacity=Number($('#overlay-opacity').value)/100;
@@ -70,7 +79,7 @@ async function previewPair(imageFile,maskFile,source='single',resetResults=true)
   const target=source==='single'?geometryMessage:$('#preview-geometry');
   if(source==='single'){
     geometryReady=false;updateRun();
-    if(resetResults){clearResults();status.textContent='';}
+    if(resetResults){clearResults();status.textContent='';singleProgress.hide();}
   }
   resetPreview();
   if(!imageFile||!maskFile){
@@ -193,7 +202,7 @@ function renderBatchPlan(){
   batchRun.disabled=!pairs.length;
   $('#batch-result').hidden=!pairs.length||mode!=='batch';
   $('#batch-result-body').replaceChildren();$('#batch-count').textContent='';
-  batchRows=[];batchDownload.hidden=true;$('#batch-status').textContent='';
+  batchRows=[];batchDownload.hidden=true;$('#batch-status').textContent='';batchProgress.hide();
 }
 batchDirectory.addEventListener('change',()=>{batchPlan=pairFiles([...batchDirectory.files]);renderBatchPlan();});
 
@@ -211,14 +220,22 @@ batchRun.addEventListener('click',async()=>{
   batchCancel.hidden=false;batchDownload.hidden=true;
   $('#batch-result-body').replaceChildren();
   const pairs=[...batchPlan.pairs];let failed=0;
+  const started=performance.now();
+  batchProgress.show();
+  const showBatch=(done,fraction,phase)=>{
+    const reviewed=done+fraction,remaining=done>0?Math.ceil((performance.now()-started)/done*(pairs.length-reviewed)/1000):null;
+    batchProgress.update(100*reviewed/pairs.length,phase,`${done} de ${pairs.length} casos revisados · ${Math.round(100*reviewed/pairs.length)} %`,`${elapsed(started)}${remaining===null?'':` · ~${remaining} s restantes`}`);
+  };
+  showBatch(0,0,'Preparando casos…');
   for(let index=0;index<pairs.length;index++){
     if(batchCancelled)break;
     const {id,image,mask}=pairs[index];
     $('#batch-status').textContent=`Procesando ${index+1}/${pairs.length}: ${id}…`;
+    showBatch(index,0,`Caso ${index+1}/${pairs.length}: leyendo ${id}`);
     try{
       const [imageBuffer,maskBuffer]=await Promise.all([image.arrayBuffer(),mask.arrayBuffer()]);
       if(batchCancelled)break;
-      const response=await runWorker({...settings,imageName:image.name,maskName:mask.name},imageBuffer,maskBuffer,(worker,reject)=>{activeBatchWorker={worker,reject};});
+      const response=await runWorker({...settings,imageName:image.name,maskName:mask.name},imageBuffer,maskBuffer,(worker,reject)=>{activeBatchWorker={worker,reject};},({fraction,label})=>showBatch(index,fraction,`Caso ${index+1}/${pairs.length}: ${label}`));
       activeBatchWorker=null;
       if(!response.ok)throw Error(response.error);
       batchRows.push({id,features:response.features});
@@ -229,12 +246,15 @@ batchRun.addEventListener('click',async()=>{
       failed++;appendBatchResult(id,`Error: ${error.message}`,null);
     }
     $('#batch-count').textContent=`${batchRows.length} completos · ${failed} con error · ${index+1}/${pairs.length} revisados`;
+    showBatch(index+1,0,`Revisados ${index+1} de ${pairs.length} casos`);
   }
   batchBusy=false;batchRun.disabled=!batchPlan.pairs.length;batchDirectory.disabled=false;batchCancel.hidden=true;
   for(const button of batchPairs.querySelectorAll('button'))button.disabled=false;
   batchDownload.hidden=!batchRows.length;
   $('#batch-status').textContent=batchCancelled?`Lote cancelado: ${batchRows.length} casos completos.`:
     `Lote terminado: ${batchRows.length} casos completos, ${failed} con error.`;
+  if(batchCancelled)batchProgress.update($('#batch-progress-bar').value,`Cancelado · ${batchRows.length} casos completos`,$('#batch-progress-count').textContent,elapsed(started));
+  else showBatch(pairs.length,0,'Extracción del lote completa');
 });
 batchCancel.addEventListener('click',()=>{
   batchCancelled=true;
@@ -290,11 +310,14 @@ run.addEventListener('click',async()=>{
   let settings;
   try{settings=extractionSettings();}catch(error){status.textContent=error.message;return;}
   busy=true;updateRun();clearResults();status.textContent='Leyendo archivos locales…';
+  const started=performance.now();singleProgress.show();
+  const showSingle=(fraction,label)=>singleProgress.update(fraction*100,label,`${Math.round(fraction*100)} % · avance por etapas`,elapsed(started));
+  showSingle(0,'Leyendo archivos locales…');
   try{
     const [image,mask]=await Promise.all([selectedImage.arrayBuffer(),selectedMask.arrayBuffer()]);
     if(version!==previewVersion)return;
     status.textContent='Calculando características en segundo plano…';
-    const response=await runWorker({...settings,imageName:selectedImage.name,maskName:selectedMask.name},image,mask);
+    const response=await runWorker({...settings,imageName:selectedImage.name,maskName:selectedMask.name},image,mask,null,({fraction,label})=>showSingle(fraction,label));
     if(version!==previewVersion)return;
     if(!response.ok)throw Error(response.error);
     allFeatures=Object.entries(response.features).map(([name,value])=>[name,value,featureParts(name)]);
@@ -308,7 +331,8 @@ run.addEventListener('click',async()=>{
     featureSearch.value='';renderResults();
     resultSection.hidden=false;download.hidden=false;
     status.textContent=`Cálculo completo: ${allFeatures.length} valores.`;
-  }catch(error){if(version===previewVersion)status.textContent=`Error: ${error.message}`;}
+    showSingle(1,'Extracción completa');
+  }catch(error){if(version===previewVersion){status.textContent=`Error: ${error.message}`;singleProgress.update($('#single-progress-bar').value,'Extracción interrumpida',$('#single-progress-count').textContent,elapsed(started));}}
   finally{busy=false;updateRun();}
 });
 

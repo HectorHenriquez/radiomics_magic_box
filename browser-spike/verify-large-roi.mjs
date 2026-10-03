@@ -31,8 +31,14 @@ for(let z=0;z<volumeSize[2];z++)for(let y=0;y<volumeSize[1];y++)for(let x=0;x<vo
 }
 const fields={space:'left-posterior-superior','space directions':'(2,0,0) (0,2,0) (0,0,2)',
   'space origin':'(0,0,0)'};
+const progress=[];
 const resampled=resampledFirstOrder({sizes:volumeSize,values:imageValues,fields},
-  {sizes:volumeSize,values:maskValues,fields},[1,1,1],'linear','none',75,true);
+  {sizes:volumeSize,values:maskValues,fields},[1,1,1],'linear','none',75,true,true,[],[1],
+  (fraction,label)=>progress.push([fraction,label]));
 assert.equal(resampled.VoxelCount,307200);
 assert.equal(Object.keys(resampled).length,108);
+assert(progress.length>10,'El remuestreo debe informar avances durante el cálculo');
+assert(progress.some(([,label])=>label==='GLCM'),'La textura debe informar su fase');
+assert(progress.every(([fraction],index)=>fraction>=0&&fraction<=1&&(!index||fraction>=progress[index-1][0])),
+  'El avance debe ser monótono y permanecer entre 0 y 1');
 console.log(`ROI grande: GLCM con ${count} vóxeles, diámetros exactos con ${points.length} puntos y remuestreo de ${resampled.VoxelCount} vóxeles.`);

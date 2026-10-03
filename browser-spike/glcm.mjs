@@ -69,7 +69,7 @@ function oneDirection(pairs,total,ng) {
   };
 }
 
-export function glcmFeatures(bins, selected, size) {
+export function glcmFeatures(bins, selected, size, onProgress = () => {}) {
   const directions=[];
   for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)
     if(z>0||z===0&&y>0||z===0&&y===0&&x>0) directions.push([x,y,z]);
@@ -79,7 +79,7 @@ export function glcmFeatures(bins, selected, size) {
   let ng=0;
   for(const level of bins.values())if(level>ng)ng=level;
   const sums={};let valid=0;
-  for(const [dx,dy,dz] of directions) {
+  for(const [directionIndex,[dx,dy,dz]] of directions.entries()) {
     const pairs=new Map();let total=0;
     for(const [idx] of selected) {
       const x=idx%sx,y=Math.floor(idx/sx)%sy,z=Math.floor(idx/plane);
@@ -91,9 +91,10 @@ export function glcmFeatures(bins, selected, size) {
       for(const key of [`${i},${j}`,`${j},${i}`])pairs.set(key,(pairs.get(key)||0)+1);
       total+=2;
     }
-    if(!total)continue;
+    if(!total){onProgress((directionIndex+1)/directions.length);continue;}
     const values=oneDirection(pairs,total,ng);valid++;
     for(const [key,value] of Object.entries(values))sums[key]=(sums[key]||0)+value;
+    onProgress((directionIndex+1)/directions.length);
   }
   if(!valid)throw Error('ROI sin pares de vóxeles vecinos');
   return Object.fromEntries(Object.entries(sums).map(([key,value])=>[`original_glcm_${key}`,value/valid]));

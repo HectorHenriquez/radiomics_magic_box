@@ -10,6 +10,8 @@ OUTPUT = ROOT / "dist"
 
 FILES = (
     "index.html",
+    "favicon.ico",
+    "favicon.png",
     "main.mjs",
     "worker.mjs",
     "batch.mjs",
